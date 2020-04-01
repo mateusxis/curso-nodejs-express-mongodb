@@ -1,0 +1,13 @@
+{
+  "name": "@cognitaxis/nodejs-basico",
+  "version": "1.0.0",
+  "description": "Repositório do Curso Básico de NodeJs desenvolvido em Express com MongoDB.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/mateusxis/curso-nodejs-express-mongodb",
+  "author": "mateusxis",
+  "license": "ISC",
+  "dependencies": {}
+}
