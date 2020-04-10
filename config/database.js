@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const url = 'mongodb+srv://ingresso:ingresso123@clusterxis-6owt6.mongodb.net/nodejs?retryWrites=true';
-const options = { useNewUrlParser: true, useUnifiedTopology: true };
+const options = { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false };
 
 mongoose.connect(url, options);
 
