@@ -1,12 +1,14 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const jwt_pass = process.env.jwt_pass;
+
 const UserModel = require('../model/user');
 
 const AuthController = function(){};
 
 AuthController.createUserToken = (userId) => {
-  return jwt.sign({ id: userId }, 'ingresso.com2020', { expiresIn: '7d' });
+  return jwt.sign({ id: userId }, jwt_pass, { expiresIn: '7d' });
 }
 
 AuthController.auth = async (req, res) => {
