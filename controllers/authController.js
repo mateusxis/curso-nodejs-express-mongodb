@@ -2,8 +2,10 @@ const bcrypt = require('bcrypt');
 
 const UserModel = require('../model/user');
 
-class AuthController {
-  static async auth (req, res) {
+const AuthController = function(){};
+
+
+AuthController.auth = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) return res.send({ error: 'São necessário os campos de email e password!' });
@@ -26,6 +28,5 @@ class AuthController {
       return res.send({ error: 'Erro ao buscar usuário!' });
     }
   }
-}
 
 module.exports = AuthController;
