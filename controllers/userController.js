@@ -3,41 +3,49 @@ const UserModel = require('../model/user');
 class UserController {
   static async index(req, res) {
     const { id } = req.params;
-
     if (!id) return res.send({ error: 'É necessário o id do usuário!' });
+    if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
+  
+    try {
+      const user = await UserModel.findById(id);
 
-    UserModel.findById(id, (err, data) => {
-      if (err) return res.send({ error: 'Erro ao buscar usuário!' });
-
-      return res.send(data);
-    })
+      return res.send(user);
+      
+    } catch (err) {
+      return res.send({ error: 'Erro ao buscar usuário!' });
+    }
   } 
 
   static async show(req, res) {
-    UserModel.find({}, (err, data) => {
-      if (err) return res.send({ error: 'Erro ao buscar os usuários!' });
-  
-      return res.send(data);
-    });
+    try {
+      const user = await UserModel.find({});
+      return res.send(user);
+    } catch(err) {
+      return res.send({ error: 'Erro ao buscar os usuários!' });
+    }
   }
 
   static async create(req, res) {
     const { email, name, password } = req.body;
 
-    if (!email || !name || !password) return res.send({ error: 'São necessário os campos de name, email e password!' });
+    if (!email || !name || !password) {
+      return res.send({ error: 'São necessário os campos de name, email e password!' });
+    }
 
-    UserModel.findOne({email}, (err, data) => {
-      if (err) return res.send({ error: 'Erro ao buscar usuário!' });
-      if (data) return res.send({ error: 'Usuário já existe!' });
+    if (typeof email !== 'string' || typeof name !== 'string' || typeof password !== 'string') {
+      return res.send({ error: 'Os campos não estão com tipo de variável correto!' });
+    }
 
-      UserModel.create({ email, name, password }, (err, data) => {
-        if (err) return res.send({ error: 'Erro ao salvar usuário!' });
+    try {
+      if (await UserModel.findOne({email})) return res.send({ error: 'Usuário já existe!' });
+      
+      const user = await UserModel.create({ email, name, password });
+      user.password = undefined;
+      return res.send(user);
 
-        data.password = undefined;
-
-        return res.send(data);
-      });
-    });
+    } catch (err) {
+      return res.send({ error: 'Erro ao salvar usuário!' });
+    }
   }
 
   static async update(req, res) {
@@ -45,28 +53,37 @@ class UserController {
     const { email, name, password } = req.body;
 
     if (!id) return res.send({ error: 'É necessário o id do usuário!' });
-    if (!email && !name && !password) return res.send({ error: 'É necessário os campos de name ou email ou password!' });
-    
-    UserModel.findOneAndUpdate(id, req.body, (err, data) => {
-      if (err) return res.send({ error: 'Erro ao atualizar o usuário!' });
-      UserModel.findById(id, (err, data) => {
-        if (err) return res.send({ error: 'Erro ao buscar o usuário!' });
+    if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
 
-        return res.send(data);
-      });
-    });
+    if (!email && !name && !password) {
+      return res.send({ error: 'É necessário os campos de name ou email ou password!' });
+    }
+
+    if (
+        (email && typeof email !== 'string') || 
+        (name && typeof name !== 'string') ||
+        (password && typeof password !== 'string')) {
+      return res.send({ error: 'Os campos não estão com tipo de variável correto!' });
+    }
+    
+    await UserModel.findOneAndUpdate(id, req.body);
+    
+    const user = await UserModel.findById(id);
+    return res.send(user);
   }
 
   static async delete(req, res) {
     const { id } = req.params;
 
     if (!id) return res.send({ error: 'É necessário o id do usuário!' });
+    if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
 
-    UserModel.findByIdAndDelete(id, (err, data) => {
-      if (err) return res.send({ error: 'Erro ao deletar o usuário!' });
-
+    try {
+      await UserModel.findByIdAndDelete(id);
       return res.send({message: 'Usuário deletado com sucesso!'});
-    });
+    } catch (err) {
+      return res.send({ error: 'Erro ao deletar o usuário!' });
+    }
   }
 }
 
