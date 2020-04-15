@@ -5,25 +5,33 @@ const UserController = function(){};
 
 UserController.index = async (req, res) => {
   const { id } = req.params;
-  if (!id) return res.send({ error: 'É necessário o id do usuário!' });
-  if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
+  if (!id) return res.status(400).send({ error: 'É necessário o id do usuário!' });
+  if (typeof id !== 'string') return res.status(400).send({ error: 'O id do usuário não é tipo string!' });
 
   try {
     const user = await UserModel.findById(id);
 
-    return res.send(user);
-    
+    if (user) {
+      return res.status(200).json(user);
+    } else {
+      return res.status(401).send({ error: 'Erro ao buscar usuário!' })
+    }
   } catch (err) {
-    return res.send({ error: 'Erro ao buscar usuário!' });
+    return res.status(500).send({ error: 'Erro ao buscar usuário!' });
   }
 } 
 
 UserController.show = async (req, res) => {
   try {
     const user = await UserModel.find({});
-    return res.send(user);
+    
+    if (user) {
+      return res.status(200).json(user);
+    } else {
+      return res.status(401).send({ error: 'Erro ao buscar usuário!' })
+    }
   } catch(err) {
-    return res.send({ error: 'Erro ao buscar os usuários!' });
+    return res.status(500).send({ error: 'Erro ao buscar os usuários!' });
   }
 }
 
@@ -31,22 +39,27 @@ UserController.create = async (req, res) => {
   const { email, name, password } = req.body;
 
   if (!email || !name || !password) {
-    return res.send({ error: 'São necessário os campos de name, email e password!' });
+    return res.status(400).send({ error: 'São necessário os campos de name, email e password!' });
   }
 
   if (typeof email !== 'string' || typeof name !== 'string' || typeof password !== 'string') {
-    return res.send({ error: 'Os campos não estão com tipo de variável correto!' });
+    return res.status(400).send({ error: 'Os campos não estão com tipo de variável correto!' });
   }
 
   try {
-    if (await UserModel.findOne({email})) return res.send({ error: 'Usuário já existe!' });
+    if (await UserModel.findOne({email})) return res.status(400).send({ error: 'Usuário já existe!' });
     
     const user = await UserModel.create({ email, name, password });
-    user.password = undefined;
-    return res.send(user);
+
+    if (user) {
+      user.password = undefined;
+      return res.status(201).json(user);
+    } else {
+      return res.status(401).send({ error: 'Erro ao salvar usuário!' })
+    }
 
   } catch (err) {
-    return res.send({ error: 'Erro ao salvar usuário!' });
+    return res.status(500).send({ error: 'Erro ao salvar usuário!' });
   }
 }
 
@@ -54,37 +67,45 @@ UserController.update = async (req, res) => {
   const { id } = req.params;
   const { email, name, password } = req.body;
 
-  if (!id) return res.send({ error: 'É necessário o id do usuário!' });
-  if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
+  if (!id) return res.status(400).send({ error: 'É necessário o id do usuário!' });
+  if (typeof id !== 'string') return res.status(400).send({ error: 'O id do usuário não é tipo string!' });
 
   if (!email && !name && !password) {
-    return res.send({ error: 'É necessário os campos de name ou email ou password!' });
+    return res.status(400).send({ error: 'É necessário os campos de name ou email ou password!' });
   }
 
   if (
       (email && typeof email !== 'string') || 
       (name && typeof name !== 'string') ||
       (password && typeof password !== 'string')) {
-    return res.send({ error: 'Os campos não estão com tipo de variável correto!' });
+    return res.status(400).send({ error: 'Os campos não estão com tipo de variável correto!' });
   }
-  
-  await UserModel.findOneAndUpdate(id, req.body);
-  
-  const user = await UserModel.findById(id);
-  return res.send(user);
+
+  try {
+    await UserModel.findOneAndUpdate(id, req.body);
+    const user = await UserModel.findById(id);
+
+    if (user) {
+      return res.status(200).json(user);
+    } else {
+      return res.status(401).send({ error: 'Erro ao atualizar usuário!' })
+    }
+  } catch (err) {
+    return res.status(500).send({ error: 'Erro ao atualizar o usuário!' });
+  }
 }
 
 UserController.delete = async (req, res) => {
   const { id } = req.params;
 
-  if (!id) return res.send({ error: 'É necessário o id do usuário!' });
-  if (typeof id !== 'string') return res.send({ error: 'O id do usuário não é tipo string!' });
+  if (!id) return res.status(400).send({ error: 'É necessário o id do usuário!' });
+  if (typeof id !== 'string') return res.status(400).send({ error: 'O id do usuário não é tipo string!' });
 
   try {
     await UserModel.findByIdAndDelete(id);
-    return res.send({message: 'Usuário deletado com sucesso!'});
+    return res.status(200).send({message: 'Usuário deletado com sucesso!'});
   } catch (err) {
-    return res.send({ error: 'Erro ao deletar o usuário!' });
+    return res.status(500).send({ error: 'Erro ao deletar o usuário!' });
   }
 }
 
