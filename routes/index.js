@@ -5,4 +5,3 @@ module.exports = app => {
   app.use('/auth', authRouter)
   app.use('/users', userRouter)
 }
-
