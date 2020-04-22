@@ -6,6 +6,8 @@ dotenv.config();
 const routes = require('./routes');
 const database = require('./config/database');
 
+const { port } = require('./config');
+
 const app = express();
 
 database();
@@ -15,6 +17,6 @@ app.use(bodyParser.json());
 
 routes(app);
 
-app.listen(3000);
+app.listen(port, `Server runnig on port ${port}.`);
 
 module.exports = app;
