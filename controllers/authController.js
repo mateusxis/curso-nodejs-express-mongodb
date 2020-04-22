@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const jwt_pass = process.env.jwt_pass;
+const { jwt_pass } = require('../config');
 
 const UserModel = require('../model/user');
 
