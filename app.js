@@ -17,6 +17,6 @@ app.use(bodyParser.json());
 
 routes(app);
 
-app.listen(port, `Server runnig on port ${port}.`);
+app.listen(port, () => console.log(`Server runnig on port ${port}.`));
 
 module.exports = app;
